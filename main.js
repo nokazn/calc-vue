@@ -74,7 +74,7 @@ const vm = new Vue({
       return `${this.$data._formulaHistory}${this.$data._tmpFormula}`;
     },
     formula () {
-      return `${this.nums.get(0)}${this.opes.get(1)}${this.nums.get(1)}`;
+      return `${this.nums.get(0)}${this.opes.get(1)}(${this.nums.get(1)})`;
     }
   },
   mounted () {
@@ -109,7 +109,7 @@ const vm = new Vue({
       else if (e.key === 'Delete') this.onCancel();
       else if (e.key === 'Backspace') this.onBackSpace();
       else if (e.key === '=' || e.key === 'Enter') this.onEqu();
-      else if (e.key === 'F9') this.onNegate();
+      else if (e.key === 'F9') this.onUnaryOpe('negate');
       // console.log(e);
       console.log({nums: this.nums._q, num: this.num, opes: this.opes._q, ope: this.ope});
       console.log(this.nums._q);
@@ -159,11 +159,11 @@ const vm = new Vue({
         this.nums.enqueue(this.num || this.answer || '0');
       }
       this.ope = ope;
-      this.updateTmpFormula();
       if (this.nums.get(0) && this.nums.get(1) && this.opes.get(1)) {
         this.num = '';
         this.calc();
       }
+      this.updateTmpFormula(this.num || this.nums.get(0) || this.answer || 0, ope);
     },
     onEqu () {
       if (this.nums.get(1)) {
@@ -190,15 +190,8 @@ const vm = new Vue({
     onBackSpace () {
       this.num = this.num.slice(0, -1);
     },
-    onNegate () {
-      if (this.num) {
-        this.num = String(Number(this.num) * -1);
-      } else if (this.answer) {
-        this.answer = String(Number(this.answer) * -1);
-      }
-    },
-    updateTmpFormula () {
-      this.$data._tmpFormula = `${this.nums.get(1)}${this.ope}`;
+    updateTmpFormula (num, ope) {
+      this.$data._tmpFormula = num >= 0 ? `${num}${ope}` : `(${num})${ope}`;
     },
     updateFormulaHistroy () {
       this.$data._formulaHistory += this.$data._tmpFormula;
