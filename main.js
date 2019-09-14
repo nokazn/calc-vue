@@ -60,8 +60,8 @@ const vm = new Vue({
       },
       set (val) {
         if (val.replace(/\.|-/, '').length <= 16) {
-          if (this.$data._num === '' && val === '0') {
-            this.$data._num = '';
+          if (this.$data._num === '0' && val.slice(-1) === '0') {
+            this.$data._num = '0';
           } else if (this.$data._num === '' && val === '.') {
             this.$data._num = '0.';
           } else if (!this.$data._num.includes('.') || val.slice(-1) !== '.') {
