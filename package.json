@@ -1,0 +1,24 @@
+{
+  "name": "calc-vue",
+  "version": "1.0.0",
+  "description": "Windows10 ライクな電卓",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "zip": "powershell Compress-Archive -Path .\\index.html, .\\css, .\\js -DestinationPath ..\\dist.zip -Update",
+    "deploy": "npx netlify deploy -d . --prod"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nokazn/calc-vue.git"
+  },
+  "author": "nokazn",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nokazn/calc-vue/issues"
+  },
+  "homepage": "https://github.com/nokazn/calc-vue#readme",
+  "devDependencies": {
+    "netlify-cli": "^2.20.2"
+  }
+}
