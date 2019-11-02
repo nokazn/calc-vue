@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "zip": "powershell Compress-Archive -Path .\\index.html, .\\css, .\\js -DestinationPath ..\\dist.zip -Update",
-    "deploy": "npx netlify deploy -d . --prod"
+    "deploy": "npx netlify deploy -d src --prod"
   },
   "repository": {
     "type": "git",
