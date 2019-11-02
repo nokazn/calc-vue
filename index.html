@@ -7,6 +7,8 @@
     <title>電卓</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.9/dist/vue.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   </head>
   <body>
     <div id="app" class="container" v-cloak>
@@ -14,40 +16,40 @@
       <div id="answerBox" class="answer-box">{{ (num || answer) | toZero | addCommas }}</div>
       <table cellspacing="0" border="0">
         <tr>
-          <td><button class="sub-ope-button" @click="onUnaryOpe('percent')">％</button></td>
-          <td><button class="sub-ope-button" @click="onUnaryOpe('root')">√</button></td>
-          <td><button class="sub-ope-button" @click="onUnaryOpe('square')">x^2</button></td>
-          <td><button class="sub-ope-button" @click="onUnaryOpe('reciprocal')">1/x</button></td>
+          <td><button class="sub-ope-button" @click="onUnaryOpe('percent')">\(％\)</button></td>
+          <td><button class="sub-ope-button" @click="onUnaryOpe('root')">\(\sqrt{x}\)</button></td>
+          <td><button class="sub-ope-button" @click="onUnaryOpe('square')">\(x^{2}\)</button></td>
+          <td><button class="sub-ope-button" @click="onUnaryOpe('reciprocal')">\(\frac{1}{x}\)</button></td>
         </tr>
         <tr>
           <td><button name ="AC" class="sub-ope-button" @click="onClearAll()">AC</button></td>
           <td><button class="sub-ope-button" @click="onCancel()">C</button></td>
           <td><button class="sub-ope-button" @click="onBackSpace()">←</button></td>
-          <td><button class="main-ope-button" @click="onBinaryOpe('/')">÷</button></td>
+          <td><button class="main-ope-button" @click="onBinaryOpe('/')">\(\div\)</button></td>
         </tr>
         <tr>
           <td><button class="num-button" @click="onNum('7')">7</button></td>
           <td><button class="num-button" @click="onNum('8')">8</button></td>
           <td><button class="num-button" @click="onNum('9')">9</button></td>
-          <td><button class="main-ope-button" @click="onBinaryOpe('*')">×</button></td>
+          <td><button class="main-ope-button" @click="onBinaryOpe('*')">\(\times\)</button></td>
         </tr>
         <tr>
           <td><button class="num-button" @click="onNum('4')">4</button></td>
           <td><button class="num-button" @click="onNum('5')">5</button></td>
           <td><button class="num-button" @click="onNum('6')">6</button></td>
-          <td><button class="main-ope-button" @Click="onBinaryOpe('-')">-</button></td>
+          <td><button class="main-ope-button" @Click="onBinaryOpe('-')">\(-\)</button></td>
         </tr>
         <tr>
           <td><button class="num-button" @Click="onNum('1')">1</button></td>
           <td><button class="num-button" @click="onNum('2')">2</button></td>
           <td><button class="num-button" @click="onNum('3')">3</button></td>
-          <td><button class="main-ope-button" @click="onBinaryOpe('+')">+</button></td>
+          <td><button class="main-ope-button" @click="onBinaryOpe('+')">\(+\)</button></td>
         </tr>
         <tr>
-          <td><button class="sub-ope-button" @click="onUnaryOpe('negate')">±</button></td>
+          <td><button class="sub-ope-button" @click="onUnaryOpe('negate')">\(\pm\)</button></td>
           <td><button class="num-button" @click="onNum('0')">0</button></td>
           <td><button class="sub-ope-button" @click="onNum('.')">.</button></td>
-          <td><button class="main-ope-button" @click="onEqu()">=</button></td>
+          <td><button class="main-ope-button" @click="onEqu()">\(=\)</button></td>
         </tr>
       </table>
     </div>
