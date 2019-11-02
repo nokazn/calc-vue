@@ -11,7 +11,7 @@
   <body>
     <div id="app" class="container" v-cloak>
       <div id="tmpFormulaBox" class="tmp-formula-box">{{ formulaHistory }}</div>
-      <div id="answerBox" class="answer-box">{{ num || answer | toZero | digits | addCommas }}</div>
+      <div id="answerBox" class="answer-box">{{ (num || answer) | toZero | addCommas }}</div>
       <table cellspacing="0" border="0">
         <tr>
           <td><button class="sub-ope-button" @click="onUnaryOpe('percent')">％</button></td>
