@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#f0f0f0">
     <title>電卓</title>
     <link rel="stylesheet" href="/css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.9/dist/vue.js"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.9/dist/vue.js"></script>
   </head>
   <body>
     <div id="app" class="container" v-cloak>
@@ -17,30 +17,13 @@
         <div class="answer-box">{{ (num || answer) | toZero | addCommas }}</div>
       </div>
       <div class="buttons-container">
-        <button class="unary-ope-button" @click="onUnaryOpe('percent')">\(％\)</button>
-        <button class="unary-ope-button" @click="onUnaryOpe('root')">\(\sqrt{x}\)</button>
-        <button class="unary-ope-button" @click="onUnaryOpe('square')">\(x^{2}\)</button>
-        <button class="unary-ope-button" @click="onUnaryOpe('reciprocal')">\(\frac{1}{x}\)</button>
-        <button class="unary-ope-button" @click="onClearAll()">AC</button>
-        <button class="unary-ope-button" @click="onCancel()">C</button>
-        <button class="unary-ope-button" @click="onBackSpace()">←</button>
-        <button class="binary-ope-button" @click="onBinaryOpe('/')">\(\div\)</button>
-        <button class="num-button" @click="onNum('7')">7</button>
-        <button class="num-button" @click="onNum('8')">8</button>
-        <button class="num-button" @click="onNum('9')">9</button>
-        <button class="binary-ope-button" @click="onBinaryOpe('*')">\(\times\)</button>
-        <button class="num-button" @click="onNum('4')">4</button>
-        <button class="num-button" @click="onNum('5')">5</button>
-        <button class="num-button" @click="onNum('6')">6</button>
-        <button class="binary-ope-button" @Click="onBinaryOpe('-')">\(-\)</button>
-        <button class="num-button" @Click="onNum('1')">1</button>
-        <button class="num-button" @click="onNum('2')">2</button>
-        <button class="num-button" @click="onNum('3')">3</button>
-        <button class="binary-ope-button" @click="onBinaryOpe('+')">\(+\)</button>
-        <button class="unary-ope-button" @click="onUnaryOpe('negate')">\(\pm\)</button>
-        <button class="num-button" @click="onNum('0')">0</button>
-        <button class="unary-ope-button" @click="onNum('.')">.</button>
-        <button class="binary-ope-button" @click="onEqu()">\(=\)</button>
+        <button
+          v-for="button in buttons"
+          :key="button.name"
+          v-bind="button"
+          @click="onClick(button)">
+          <span v-show="isShown">{{ button.content }}</span>
+        </button>
       </div>
     </div>
     <script src="/js/main.js" type="module"></script>

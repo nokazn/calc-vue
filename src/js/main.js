@@ -1,14 +1,24 @@
 import Queue from './queue.js';
+import buttons from './buttons.js';
 
 new Vue({
   el: '#app',
   mounted () {
     document.addEventListener('keydown', this.onInput);
+    this.$nextTick(() => {
+      // MathJax で成形されるまで少し時間がかかるので待ってから表示
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+      setTimeout(() => {
+        this.isShown = true
+      }, 100);
+    });
   },
   destroyed () {
     document.removeEventListener('keydown', this.onInput);
   },
   data: {
+    isShown: false,
+    buttons,
     nums: new Queue(2),
     opes: new Queue(2),
     _num: '',
@@ -115,6 +125,9 @@ new Vue({
       } else if (e.key === 'Enter' || e.key === '=') {
         this.onEqu();
       }
+    },
+    onClick ({ arg, handler }) {
+      arg ? this[handler](arg) : this[handler]();
     },
     /**
      * 数字が入力された場合
@@ -257,7 +270,6 @@ new Vue({
      * 直近で入力した数字を削除する
      */
     onBackSpace () {
-      console.log(this.num.slice(0, -1))
       this.num = this.num.slice(0, -1);
     },
     /**
@@ -268,7 +280,6 @@ new Vue({
       if (num != null) {
         // 文字列に数字以外を含み、Number() すると NaN になる場合
         if (Number.isNaN(Number(num))) {
-          console.log(num)
           this.$data._tmpFormula.num = num;
         } else {
           this.$data._tmpFormula.num = num >= 0 ? num : `(${num})`;
@@ -279,8 +290,6 @@ new Vue({
       }
     },
     updateNumInFormulaHistroy () {
-      console.log('fixed num');
-      console.log(this.$data._tmpFormula.num);
       this.$data._fixedFormulaHistory += this.$data._tmpFormula.num;
       this.$data._tmpFormula.num = '';
     },
