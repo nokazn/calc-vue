@@ -12,46 +12,36 @@
   </head>
   <body>
     <div id="app" class="container" v-cloak>
-      <div id="tmpFormulaBox" class="tmp-formula-box">{{ formulaHistory }}</div>
-      <div id="answerBox" class="answer-box">{{ (num || answer) | toZero | addCommas }}</div>
-      <table cellspacing="0" border="0">
-        <tr>
-          <td><button class="sub-ope-button" @click="onUnaryOpe('percent')">\(％\)</button></td>
-          <td><button class="sub-ope-button" @click="onUnaryOpe('root')">\(\sqrt{x}\)</button></td>
-          <td><button class="sub-ope-button" @click="onUnaryOpe('square')">\(x^{2}\)</button></td>
-          <td><button class="sub-ope-button" @click="onUnaryOpe('reciprocal')">\(\frac{1}{x}\)</button></td>
-        </tr>
-        <tr>
-          <td><button name ="AC" class="sub-ope-button" @click="onClearAll()">AC</button></td>
-          <td><button class="sub-ope-button" @click="onCancel()">C</button></td>
-          <td><button class="sub-ope-button" @click="onBackSpace()">←</button></td>
-          <td><button class="main-ope-button" @click="onBinaryOpe('/')">\(\div\)</button></td>
-        </tr>
-        <tr>
-          <td><button class="num-button" @click="onNum('7')">7</button></td>
-          <td><button class="num-button" @click="onNum('8')">8</button></td>
-          <td><button class="num-button" @click="onNum('9')">9</button></td>
-          <td><button class="main-ope-button" @click="onBinaryOpe('*')">\(\times\)</button></td>
-        </tr>
-        <tr>
-          <td><button class="num-button" @click="onNum('4')">4</button></td>
-          <td><button class="num-button" @click="onNum('5')">5</button></td>
-          <td><button class="num-button" @click="onNum('6')">6</button></td>
-          <td><button class="main-ope-button" @Click="onBinaryOpe('-')">\(-\)</button></td>
-        </tr>
-        <tr>
-          <td><button class="num-button" @Click="onNum('1')">1</button></td>
-          <td><button class="num-button" @click="onNum('2')">2</button></td>
-          <td><button class="num-button" @click="onNum('3')">3</button></td>
-          <td><button class="main-ope-button" @click="onBinaryOpe('+')">\(+\)</button></td>
-        </tr>
-        <tr>
-          <td><button class="sub-ope-button" @click="onUnaryOpe('negate')">\(\pm\)</button></td>
-          <td><button class="num-button" @click="onNum('0')">0</button></td>
-          <td><button class="sub-ope-button" @click="onNum('.')">.</button></td>
-          <td><button class="main-ope-button" @click="onEqu()">\(=\)</button></td>
-        </tr>
-      </table>
+      <div class="box-container">
+        <div class="tmp-formula-box">{{ formulaHistory }}</div>
+        <div class="answer-box">{{ (num || answer) | toZero | addCommas }}</div>
+      </div>
+      <div class="buttons-container">
+        <button class="unary-ope-button" @click="onUnaryOpe('percent')">\(％\)</button>
+        <button class="unary-ope-button" @click="onUnaryOpe('root')">\(\sqrt{x}\)</button>
+        <button class="unary-ope-button" @click="onUnaryOpe('square')">\(x^{2}\)</button>
+        <button class="unary-ope-button" @click="onUnaryOpe('reciprocal')">\(\frac{1}{x}\)</button>
+        <button class="unary-ope-button" @click="onClearAll()">AC</button>
+        <button class="unary-ope-button" @click="onCancel()">C</button>
+        <button class="unary-ope-button" @click="onBackSpace()">←</button>
+        <button class="binary-ope-button" @click="onBinaryOpe('/')">\(\div\)</button>
+        <button class="num-button" @click="onNum('7')">7</button>
+        <button class="num-button" @click="onNum('8')">8</button>
+        <button class="num-button" @click="onNum('9')">9</button>
+        <button class="binary-ope-button" @click="onBinaryOpe('*')">\(\times\)</button>
+        <button class="num-button" @click="onNum('4')">4</button>
+        <button class="num-button" @click="onNum('5')">5</button>
+        <button class="num-button" @click="onNum('6')">6</button>
+        <button class="binary-ope-button" @Click="onBinaryOpe('-')">\(-\)</button>
+        <button class="num-button" @Click="onNum('1')">1</button>
+        <button class="num-button" @click="onNum('2')">2</button>
+        <button class="num-button" @click="onNum('3')">3</button>
+        <button class="binary-ope-button" @click="onBinaryOpe('+')">\(+\)</button>
+        <button class="unary-ope-button" @click="onUnaryOpe('negate')">\(\pm\)</button>
+        <button class="num-button" @click="onNum('0')">0</button>
+        <button class="unary-ope-button" @click="onNum('.')">.</button>
+        <button class="binary-ope-button" @click="onEqu()">\(=\)</button>
+      </div>
     </div>
     <script src="/js/main.js" type="module"></script>
     <script src="/js/queue.js" type="module"></script>

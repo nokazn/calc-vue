@@ -1,81 +1,83 @@
 body {
   margin: 0;
-  height: 100%;
-  width: 100%;
-  min-height: 400px;
-  /* min-width: 600px; */
   background-color: #e6e6e6;
 }
 
 div.container {
   width: 100%;
   height: 100vh;
-  /* min-width: 400px;
-  min-height: 300px; */
+  min-width: 300px;
+  min-height: 400px;
 }
 
 [v-cloak] {
   display: none;
 }
 
-div.tmp-formula-box,
-div.answer-box {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  box-sizing: border-box;
-  width: 100%;
-  padding-left: 10px;
-  padding-right: 10px;
+div.box-container {
+  display: grid;
+  grid-template-rows: 1fr 2fr;
+  height: 30%;
+  padding: 0 5% 0;
 }
 
-div.tmp-formula-box {
-  height: 15vh;
-  font-size: 20px;
+div.box-container .tmp-formula-box,
+div.box-container .answer-box {
+  display: flex;
+  justify-content: flex-end;
+}
+
+div.box-container .tmp-formula-box {
+  align-self: end;
+  font-size: 18px;
   color: #a9a9a9;
 }
 
-div.answer-box {
-  height: 20vh;
-  font-size: 50px;
+div.box-container .answer-box {
+  font-size: 60px;
   font-weight: bold;
 }
 
-table {
-  table-layout: fixed;
-  height: 65vh;
-  width: 100%;
+div.buttons-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  height: 70%;
 }
 
-button, button:active, button:focus {
-  color: #000000;
+div.buttons-container button,
+div.buttons-container button:active,
+div.buttons-container button:focus {
   border-style: none;
-  outline: none;
-  width: 100%;
-  height: 100%;
+  color: #000000;
   font-size: 22px;
-  margin: 0;
+  outline: none;
+  margin: .5px;
 }
 
-button.num-button {
+div.buttons-container button.num-button {
   background-color: #fafafa;
   font-size: 24px;
   font-weight: bold;
 }
 
-button.main-ope-button, button.sub-ope-button {
+div.buttons-container button.binary-ope-button,
+div.buttons-container button.unary-ope-button {
   background-color: #f0f0f0
 }
 
-button.num-button:hover, button.sub-ope-button:hover {
+div.buttons-container button.num-button:hover,
+div.buttons-container button.num-button:active,
+div.buttons-container button.unary-ope-button:hover,
+div.buttons-container button.unary-ope-button:active {
   background-color: #e6e6e6;
 }
 
-button.main-ope-button:hover {
+div.buttons-container button.binary-ope-button:hover {
   background-color: #006eb1;
   color: #d5eeee;
 }
 
-button.num-button:focus {
+div.buttons-container button.num-button:focus {
   border-style: none;
 }
