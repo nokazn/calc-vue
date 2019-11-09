@@ -24,6 +24,7 @@ new Vue({
       mutations.forEach(mutation => {
         const childEle = mutation.target.parentElement;
         const parentEle = childEle.parentElement;
+        const defaultFontSize = parentEle.dataset.defaultFontSize;
         let boxRatio = parentEle.clientWidth / window.innerWidth;
         let fontSize = Number(document.defaultView.getComputedStyle(parentEle).fontSize.replace('px', ''));
         if (boxRatio > 1) {
@@ -31,7 +32,7 @@ new Vue({
           console.log(document.defaultView.getComputedStyle(parentEle).fontSize);
         } else {
           const spanRatio = childEle.clientWidth / window.innerWidth;
-          fontSize = fontSize / spanRatio < 60 ? fontSize / spanRatio : 60;
+          fontSize = fontSize / spanRatio < defaultFontSize ? fontSize / spanRatio : defaultFontSize;
           parentEle.style.fontSize = `${fontSize / Math.pow(boxRatio, 2)}px`;
           if (boxRatio > 1) {
             parentEle.style.fontSize = `${fontSize / Math.pow(boxRatio, 2)}px`;
@@ -48,6 +49,7 @@ new Vue({
       characterData: true, // テキストノードの変化を監視
       subtree: true
     };
+    observer.observe(document.querySelector('div.tmp-formula-box'), options);
     observer.observe(document.querySelector('div.answer-box'), options);
 
     document.addEventListener('keydown', this.onInput);

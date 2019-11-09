@@ -13,11 +13,11 @@
   <body>
     <div id="app" class="container" v-cloak>
       <div class="box-container">
-        <div class="box tmp-formula-box">
-          <span class="box-value">{{ formulaHistory }}</span>
+        <div class="box tmp-formula-box" data-default-font-size="16">
+          <span>{{ formulaHistory }}</span>
         </div>
-        <div class="box answer-box">
-          <span class="box-value">{{ (num || answer) | toZero | addCommas }}</span>
+        <div class="box answer-box" data-default-font-size="60">
+          <span>{{ (num || answer) | toZero | addCommas }}</span>
         </div>
       </div>
       <div class="buttons-container">
