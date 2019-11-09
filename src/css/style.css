@@ -1,3 +1,4 @@
+
 body {
   margin: 0;
   background-color: #e6e6e6;
@@ -17,26 +18,31 @@ div.container {
 div.box-container {
   display: grid;
   grid-template-rows: 1fr 2fr;
+  width: 100%;
   height: 30%;
-  padding: 0 2% 0;
+  padding: 5% 0 5%;
+  box-sizing: border-box;
 }
 
-div.box-container .tmp-formula-box,
-div.box-container .answer-box {
+div.box-container div.box {
   display: flex;
   justify-content: flex-end;
+  align-items:  center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 3% 0;
 }
 
-div.box-container .tmp-formula-box {
-  align-self: end;
+div.box-container div.tmp-formula-box {
   font-size: 18px;
   color: #a9a9a9;
 }
 
-div.box-container .answer-box {
+div.box-container div.answer-box {
   font-size: 60px;
   font-weight: bold;
 }
+
 
 div.buttons-container {
   display: grid;

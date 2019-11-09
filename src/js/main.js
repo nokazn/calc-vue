@@ -3,26 +3,14 @@ import buttons from './buttons.js';
 
 new Vue({
   el: '#app',
-  mounted () {
-    document.addEventListener('keydown', this.onInput);
-    this.$nextTick(() => {
-      // MathJax で成形されるまで少し時間がかかるので待ってから表示
-      MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-      setTimeout(() => {
-        this.isShown = true
-      }, 100);
-    });
-  },
-  destroyed () {
-    document.removeEventListener('keydown', this.onInput);
-  },
   data: {
+    answerBoxWidthRatio: 1,
     isShown: false,
     buttons,
     nums: new Queue(2),
     opes: new Queue(2),
     _num: '',
-    maxNumLength: 16,
+    maxNumLength: 100,
     ope: '',
     _tmpFormula: {
       num: '',
@@ -30,6 +18,49 @@ new Vue({
     },
     _fixedFormulaHistory: '',
     answer: ''
+  },
+  mounted () {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach(mutation => {
+        const childEle = mutation.target.parentElement;
+        const parentEle = childEle.parentElement;
+        let boxRatio = parentEle.clientWidth / window.innerWidth;
+        let fontSize = Number(document.defaultView.getComputedStyle(parentEle).fontSize.replace('px', ''));
+        if (boxRatio > 1) {
+          parentEle.style.fontSize = `${fontSize / Math.pow(boxRatio, 2)}px`;
+          console.log(document.defaultView.getComputedStyle(parentEle).fontSize);
+        } else {
+          const spanRatio = childEle.clientWidth / window.innerWidth;
+          fontSize = fontSize / spanRatio < 60 ? fontSize / spanRatio : 60;
+          parentEle.style.fontSize = `${fontSize / Math.pow(boxRatio, 2)}px`;
+          if (boxRatio > 1) {
+            parentEle.style.fontSize = `${fontSize / Math.pow(boxRatio, 2)}px`;
+          }
+        }
+        console.log({
+          p: parentEle.clientWidth,
+          c: childEle.clientWidth,
+          w: window.innerWidth
+        })
+      });
+    });
+    const options = {
+      characterData: true, // テキストノードの変化を監視
+      subtree: true
+    };
+    observer.observe(document.querySelector('div.answer-box'), options);
+
+    document.addEventListener('keydown', this.onInput);
+    this.$nextTick(() => {
+      // MathJax で成形されるまで少し時間がかかるので待ってから表示
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+      setTimeout(() => {
+        this.isShown = true
+      }, 150);
+    });
+  },
+  destroyed () {
+    document.removeEventListener('keydown', this.onInput);
   },
   computed: {
     /**
@@ -64,7 +95,7 @@ new Vue({
           } else {
             if (inputVal === '.') {
               // 複数回目の小数点の入力か、最大文字数目の入力値が小数点の場合
-              if (this.$data._num.includes('.') || this.numLength === this.maxNumLength - 1 ) {
+              if (this.$data._num.includes('.') || this.numLength === this.maxNumLength - 1) {
                 return false;
               } else {
                 this.$data._num = val;
