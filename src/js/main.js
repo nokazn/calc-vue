@@ -33,20 +33,20 @@ new Vue({
         const parentEle = childEle.parentElement;
         const defaultFontSize = this.defaultFontSize[parentEle.id];
         let boxRatio = parentEle.clientWidth / window.innerWidth;
+        let spanRatio = (childEle.clientWidth + window.innerWidth * 0.04) / window.innerWidth;
         let fontSize = getFontSize(parentEle);
         if (diff > 0 && boxRatio > 1) {
-          parentEle.style.fontSize = `${fontSize / Math.pow(boxRatio, 2)}px`;
+          parentEle.style.fontSize = `${fontSize / Math.pow(spanRatio, 2)}px`;
         } else if (diff < 0 && boxRatio <= 1) {
           // parentEle の padding が左右で 2% ずつなのを考慮
-          const spanRatio = (childEle.clientWidth + window.innerWidth * 0.04) / window.innerWidth;
           fontSize = fontSize / spanRatio < defaultFontSize ? fontSize / spanRatio : defaultFontSize;
-          parentEle.style.fontSize = `${fontSize / Math.pow(boxRatio, 2)}px`;
+          parentEle.style.fontSize = `${fontSize}px`;
         }
       });
     });
     const options = {
       characterData: true, // テキストノードの変化を監視
-      characterDataOldValue: true,
+      characterDataOldValue: true,  // テキストノードの古い値を保持
       subtree: true  // 子孫ノードの変化を監視
     };
     observer.observe(tmpFormulaBox, options);
@@ -55,10 +55,9 @@ new Vue({
     document.addEventListener('keydown', this.onInput);
     this.$nextTick(() => {
       // MathJax で成形されるまで少し時間がかかるので待ってから表示
-      MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
       setTimeout(() => {
         this.isShown = true
-      }, 150);
+      }, 1000);
     });
   },
   destroyed () {
