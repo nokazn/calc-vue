@@ -93,6 +93,8 @@ div.buttons-container button.binary-ope-button:active {
   color: #d5eeee;
 }
 
+
+
 div.buttons-container button.num-button:focus {
-  border-style: none;
+  /* border-style: none; */
 }

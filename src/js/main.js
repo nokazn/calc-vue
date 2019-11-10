@@ -277,6 +277,9 @@ new Vue({
         this.initFormulaHistory();
       }
     },
+    /**
+     * すべてリセットする
+     */
     onClearAll () {
       this.nums.dequeue(2);
       this.opes.dequeue();
@@ -289,17 +292,15 @@ new Vue({
      * 入力中の数字をリセットする
      */
     onCancel () {
-      if (this.num) {
-        this.num = '';
-      } else if (this.answer) {
-        this.answer = '';
-      }
+      this.num = '0';
     },
     /**
      * 直近で入力した数字を削除する
      */
     onBackSpace () {
-      this.num = this.num.slice(0, -1);
+      if (this.num !== '0') {
+        this.num = this.num.slice(0, -1);
+      }
     },
     /**
      * @param {string} num
