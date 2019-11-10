@@ -151,7 +151,7 @@ export default [
     content: '0',
     class: 'num-button',
     handler: 'onNum',
-    arg: ''
+    arg: '0'
   },
   {
     name: '.',

@@ -37,7 +37,6 @@ new Vue({
         if (diff > 0 && boxRatio > 1) {
           parentEle.style.fontSize = `${fontSize / Math.pow(boxRatio, 2)}px`;
         } else if (diff < 0 && boxRatio <= 1) {
-          console.log(defaultFontSize);
           // parentEle の padding が左右で 2% ずつなのを考慮
           const spanRatio = (childEle.clientWidth + window.innerWidth * 0.04) / window.innerWidth;
           fontSize = fontSize / spanRatio < defaultFontSize ? fontSize / spanRatio : defaultFontSize;
@@ -80,35 +79,34 @@ new Vue({
        */
       set (val) {
         const inputVal = val.slice(-1);
+        const diff = val.length - this.$data._num.length;
         // 値をクリアするとき
         if (inputVal === '') {
           this.$data._num = '';
         // 値が入力され、最大文字数未満 の場合
-        } else if (this.numLength < this.maxNumLength) {
+        } else if (this.numLength < this.maxNumLength || diff < 0) {
           // 1桁目の入力の場合
           if (this.$data._num === '') {
-            if (inputVal === '0') {
-              return false;
-            } else if (inputVal === '.') {
+            if (inputVal === '.') {
               this.$data._num = '0.';
             } else {
               this.$data._num = val;
             }
           // 2桁目以降の入力の場合
           } else {
-            if (inputVal === '.') {
+            if (this.$data._num === '0') {
+              this.$data._num = inputVal;
+            } else if (
               // 複数回目の小数点の入力か、最大文字数目の入力値が小数点の場合
-              if (this.$data._num.includes('.') || this.numLength === this.maxNumLength - 1) {
-                return false;
-              } else {
-                this.$data._num = val;
-              }
+              inputVal === '.'
+              && (this.$data._num.includes('.') || this.numLength === this.maxNumLength - 1)
+            ) {
+              return;
             } else {
               this.$data._num = val;
             }
           }
         }
-        return true;
       }
     },
     /**
@@ -172,13 +170,9 @@ new Vue({
         // 二項演算子が確定する
         this.opes.enqueue(this.ope);
         this.ope = '';
-        this.updateOpeInFormulaHistroy();
-        // 2つ目の数字の記憶を開始する
-        this.num = num;
-      } else {
-        // 1つ目の数字を記憶していく
-        this.num += num;
+        this.settleOpeInFormulaHistroy();
       }
+      this.num += num;
     },
     /**
      * 二項演算子が入力された場合
@@ -186,14 +180,14 @@ new Vue({
      */
     onBinaryOpe (ope) {
       if (!this.ope) {
-        // 入力値、前回の答え、0 の優先順位で1つ目の数字を確定させ、 nums に格納する
-        this.nums.enqueue(this.num || this.answer || '0');
+        // 入力値、前回の答え、0 の優先順位で1つ目の数字を確定させ、nums に格納する
+        const num = this.num || this.answer || '0';
+        this.nums.enqueue(num);
+        this.num = '';
+        this.answer = num;
         // 二項演算子が入力されたときに数字も同時に更新する
-        this.updateTmpFormula({
-          num: this.num || this.answer || '0',
-          ope
-        });
-        this.updateNumInFormulaHistroy();
+        this.updateTmpFormula({ num, ope });
+        this.settleNumInFormulaHistroy();
       } else {
         // 二項演算子の上書きのみを行う
         this.updateTmpFormula({ ope });
@@ -203,7 +197,6 @@ new Vue({
         this.calc();
       }
     },
-
     /**
      * 単項演算子が入力された場合
      * @param {string} type - 'percent' | 'root' | 'square' | 'reciprocal' | 'negate'
@@ -256,31 +249,34 @@ new Vue({
         }
       };
       // 入力中の値か、なければ前回の答えを計算して入力値を更新
+      const num = this.num || this.answer || '0'
       const answer = handlers[type]({
-        formula: this.$data._tmpFormula.num || this.num || this.answer || '0',
-        value: Number(this.num || this.answer || '0')
+        formula: this.$data._tmpFormula.num || num,
+        value: Number(num)
       });
       this.num = answer.value;
       this.updateTmpFormula({
         num: answer.formula
       });
+      // 暫定の二項演算子があれば確定させる
       if (this.$data._tmpFormula.ope) {
-        this.updateOpeInFormulaHistroy();
+        this.settleOpeInFormulaHistroy();
       }
     },
     onEqu () {
       if (this.nums.get(1)) {
-        /**
-         * @todo
-         */
+        // this.num があれば採用
+        // tihs.num がなければ、暫定の二項演算子がある場合は前回の答え (現在表示されている数値) を採用
+        // 暫定の二項演算子がない場合 (答えが出た後 onEqu が呼ばれた場合) は前回の入力値を採用
         this.nums.enqueue(this.num || (this.ope ? this.answer : this.nums.get(0)));
         if (!this.opes.get(1)) {
+           // 暫定の二項演算子がない場合 (答えが出た後 onEqu が呼ばれた場合) は前回の入力値を採用
           this.opes.enqueue(this.ope || this.opes.get(0));
           this.ope = '';
         }
         this.calc();
+        this.initFormulaHistory();
       }
-      this.initFormulaHistory();
     },
     onClearAll () {
       this.nums.dequeue(2);
@@ -323,11 +319,11 @@ new Vue({
         this.$data._tmpFormula.ope = ope
       }
     },
-    updateNumInFormulaHistroy () {
+    settleNumInFormulaHistroy () {
       this.$data._fixedFormulaHistory += this.$data._tmpFormula.num;
       this.$data._tmpFormula.num = '';
     },
-    updateOpeInFormulaHistroy () {
+    settleOpeInFormulaHistroy () {
       this.$data._fixedFormulaHistory += this.$data._tmpFormula.ope;
       this.$data._tmpFormula.ope = '';
     },
@@ -342,9 +338,8 @@ new Vue({
       if (this.isCalcuatable) {
         this.answer = (new Function(`'use strict'; return ${this.formula}`))().toString();
         this.nums.enqueue(this.answer);
-        this.opes.dequeue();
-        // 答えが出た後に入力値はリセット
         this.num = '';
+        this.opes.dequeue();
       } else {
         console.error('this formula is uncalcuatable!');
         console.error({ formula: this.formula });
