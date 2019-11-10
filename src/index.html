@@ -17,7 +17,7 @@
           <span>{{ formulaHistory }}</span>
         </div>
         <div id="answerBox" class="box answer-box">
-          <span>{{ (num || answer) | toZero | addCommas }}</span>
+          <span>{{ (num || nums.get(1)) | toZero | addCommas }}</span>
         </div>
       </div>
       <div class="buttons-container">

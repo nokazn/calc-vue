@@ -17,8 +17,7 @@ new Vue({
       num: '',
       ope: ''
     },
-    _fixedFormulaHistory: '',
-    answer: ''
+    _fixedFormulaHistory: ''
   },
   mounted () {
     const tmpFormulaBox = document.querySelector('div.tmp-formula-box');
@@ -180,12 +179,13 @@ new Vue({
     onBinaryOpe (ope) {
       if (!this.ope) {
         // 入力値、前回の答え、0 の優先順位で1つ目の数字を確定させ、nums に格納する
-        const num = this.num || this.answer || '0';
+        const num = this.num || this.nums.get(1) || '0';
         this.nums.enqueue(num);
         this.num = '';
-        this.answer = num;
         // 二項演算子が入力されたときに数字も同時に更新する
-        this.updateTmpFormula({ num, ope });
+        this.updateTmpFormula({
+          num: this.$data._tmpFormula.num || num,
+          ope });
         this.settleNumInFormulaHistroy();
       } else {
         // 二項演算子の上書きのみを行う
@@ -215,10 +215,10 @@ new Vue({
        */
       const handlers = {
         percent ({ value }) {
-          const answer = value / 100;
+          const answer = Strin(value / 100);
           return {
-            formula: String(answer),
-            value: String(answer)
+            formula: answer,
+            value: answer
           };
         },
         root ({ formula, value }) {
@@ -248,7 +248,7 @@ new Vue({
         }
       };
       // 入力中の値か、なければ前回の答えを計算して入力値を更新
-      const num = this.num || this.answer || '0'
+      const num = this.num || this.nums.get(1) || '0'
       const answer = handlers[type]({
         formula: this.$data._tmpFormula.num || num,
         value: Number(num)
@@ -267,7 +267,7 @@ new Vue({
         // this.num があれば採用
         // tihs.num がなければ、暫定の二項演算子がある場合は前回の答え (現在表示されている数値) を採用
         // 暫定の二項演算子がない場合 (答えが出た後 onEqu が呼ばれた場合) は前回の入力値を採用
-        this.nums.enqueue(this.num || (this.ope ? this.answer : this.nums.get(0)));
+        this.nums.enqueue(this.num || (this.ope ? this.nums.get(1) : this.nums.get(0)));
         if (!this.opes.get(1)) {
            // 暫定の二項演算子がない場合 (答えが出た後 onEqu が呼ばれた場合) は前回の入力値を採用
           this.opes.enqueue(this.ope || this.opes.get(0));
@@ -285,7 +285,6 @@ new Vue({
       this.opes.dequeue();
       this.num = '';
       this.ope = '';
-      this.answer = '';
       this.initFormulaHistory();
     },
     /**
@@ -293,6 +292,9 @@ new Vue({
      */
     onCancel () {
       this.num = '0';
+      this.updateTmpFormula({
+        num: ''
+      })
     },
     /**
      * 直近で入力した数字を削除する
@@ -336,8 +338,8 @@ new Vue({
     },
     calc () {
       if (this.isCalcuatable) {
-        this.answer = (new Function(`'use strict'; return ${this.formula}`))().toString();
-        this.nums.enqueue(this.answer);
+        const answer = (new Function(`'use strict'; return ${this.formula}`))().toString();
+        this.nums.enqueue(answer);
         this.num = '';
         this.opes.dequeue();
       } else {
