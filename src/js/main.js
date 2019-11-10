@@ -310,12 +310,7 @@ new Vue({
      */
     updateTmpFormula ({num, ope}) {
       if (num != null) {
-        // 文字列に数字以外を含み、Number() すると NaN になる場合
-        if (Number.isNaN(Number(num))) {
-          this.$data._tmpFormula.num = num;
-        } else {
-          this.$data._tmpFormula.num = num >= 0 ? num : `(${num})`;
-        }
+        this.$data._tmpFormula.num = num;
       }
       if (ope != null) {
         this.$data._tmpFormula.ope = ope
