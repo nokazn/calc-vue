@@ -6,6 +6,7 @@ new Vue({
   el: '#app',
   data: {
     defaultFontSize: {},
+    innerWidth: 0,
     isShown: false,
     buttons,
     nums: new Queue(2),
@@ -24,6 +25,7 @@ new Vue({
     const answerBox = document.querySelector('div.answer-box');
     this.defaultFontSize.tmpFormulaBox = getFontSize(tmpFormulaBox);
     this.defaultFontSize.answerBox = getFontSize(answerBox);
+    this.innerWidth = window.innerWidth;
 
     const observer = new MutationObserver((mutations) => {
       mutations.forEach(mutation => {
@@ -31,15 +33,17 @@ new Vue({
         const childEle = mutation.target.parentElement;
         const parentEle = childEle.parentElement;
         const defaultFontSize = this.defaultFontSize[parentEle.id];
-        let boxRatio = parentEle.clientWidth / window.innerWidth;
-        let spanRatio = (childEle.clientWidth + window.innerWidth * 0.04) / window.innerWidth;
+        let boxRatio = parentEle.clientWidth / this.innerWidth;
+        // parentEle の padding が左右で 2% ずつなのを考慮
+        let spanRatio = childEle.clientWidth / (this.innerWidth * 0.90);
         let fontSize = getFontSize(parentEle);
-        if (diff > 0 && boxRatio > 1) {
-          parentEle.style.fontSize = `${fontSize / Math.pow(spanRatio, 2)}px`;
-        } else if (diff < 0 && boxRatio <= 1) {
-          // parentEle の padding が左右で 2% ずつなのを考慮
-          fontSize = fontSize / spanRatio < defaultFontSize ? fontSize / spanRatio : defaultFontSize;
+        if (diff > 0 && spanRatio >= 1) {
+          fontSize = fontSize / spanRatio;
           parentEle.style.fontSize = `${fontSize}px`;
+        } else if (diff < 0 && spanRatio < 1) {
+          fontSize = fontSize / spanRatio < defaultFontSize ? fontSize /spanRatio : defaultFontSize;
+          parentEle.style.fontSize = `${fontSize}px`;
+          console.log(fontSize)
         }
       });
     });
@@ -52,11 +56,13 @@ new Vue({
     observer.observe(answerBox, options);
 
     document.addEventListener('keydown', this.onInput);
+
     this.$nextTick(() => {
-      // MathJax で成形されるまで少し時間がかかるので待ってから表示
-      setTimeout(() => {
+      // MathJax で成形されるまで待ってから表示
+      MathJax.Hub.Register.StartupHook('Begin Typeset', () => {
         this.isShown = true
-      }, 1000);
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+      });
     });
   },
   destroyed () {
@@ -263,6 +269,7 @@ new Vue({
       }
     },
     onEqu () {
+      console.log('equ')
       if (this.nums.get(1)) {
         // this.num があれば採用
         // tihs.num がなければ、暫定の二項演算子がある場合は前回の答え (現在表示されている数値) を採用
@@ -300,7 +307,9 @@ new Vue({
      * 直近で入力した数字を削除する
      */
     onBackSpace () {
-      if (this.num !== '0') {
+      if (this.num.length === 1) {
+        this.num = '0';
+      } else {
         this.num = this.num.slice(0, -1);
       }
     },
@@ -331,6 +340,9 @@ new Vue({
         ope: ''
       };
     },
+    initFontSize (ele, fontSize) {
+      ele.style.fontSize = fontSize
+    },
     calc () {
       if (this.isCalcuatable) {
         const answer = (new Function(`'use strict'; return ${this.formula}`))().toString();
@@ -341,6 +353,7 @@ new Vue({
         console.error('this formula is uncalcuatable!');
         console.error({ formula: this.formula });
       }
+      console.log('calc')
     }
   }
 });
