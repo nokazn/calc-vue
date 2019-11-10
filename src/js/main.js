@@ -34,6 +34,7 @@ new Vue({
           const spanRatio = childEle.clientWidth / window.innerWidth;
           fontSize = fontSize / spanRatio < defaultFontSize ? fontSize / spanRatio : defaultFontSize;
           parentEle.style.fontSize = `${fontSize / Math.pow(boxRatio, 2)}px`;
+          boxRatio = parentEle.clientWidth / window.innerWidth;
           if (boxRatio > 1) {
             parentEle.style.fontSize = `${fontSize / Math.pow(boxRatio, 2)}px`;
           }
