@@ -1,16 +1,17 @@
 import Queue from './queue.js';
 import buttons from './buttons.js';
+import { getFontSize } from './utils.js';
 
 new Vue({
   el: '#app',
   data: {
-    answerBoxWidthRatio: 1,
+    defaultFontSize: {},
     isShown: false,
     buttons,
     nums: new Queue(2),
     opes: new Queue(2),
     _num: '',
-    maxNumLength: 100,
+    maxNumLength: 50,
     ope: '',
     _tmpFormula: {
       num: '',
@@ -20,38 +21,37 @@ new Vue({
     answer: ''
   },
   mounted () {
+    const tmpFormulaBox = document.querySelector('div.tmp-formula-box');
+    const answerBox = document.querySelector('div.answer-box');
+    this.defaultFontSize.tmpFormulaBox = getFontSize(tmpFormulaBox);
+    this.defaultFontSize.answerBox = getFontSize(answerBox);
+
     const observer = new MutationObserver((mutations) => {
       mutations.forEach(mutation => {
+        const diff = mutation.target.data.length - mutation.oldValue.length;
         const childEle = mutation.target.parentElement;
         const parentEle = childEle.parentElement;
-        const defaultFontSize = parentEle.dataset.defaultFontSize;
+        const defaultFontSize = this.defaultFontSize[parentEle.id];
         let boxRatio = parentEle.clientWidth / window.innerWidth;
-        let fontSize = Number(document.defaultView.getComputedStyle(parentEle).fontSize.replace('px', ''));
-        if (boxRatio > 1) {
+        let fontSize = getFontSize(parentEle);
+        if (diff > 0 && boxRatio > 1) {
           parentEle.style.fontSize = `${fontSize / Math.pow(boxRatio, 2)}px`;
-          console.log(document.defaultView.getComputedStyle(parentEle).fontSize);
-        } else {
-          const spanRatio = childEle.clientWidth / window.innerWidth;
+        } else if (diff < 0 && boxRatio <= 1) {
+          console.log(defaultFontSize);
+          // parentEle の padding が左右で 2% ずつなのを考慮
+          const spanRatio = (childEle.clientWidth + window.innerWidth * 0.04) / window.innerWidth;
           fontSize = fontSize / spanRatio < defaultFontSize ? fontSize / spanRatio : defaultFontSize;
           parentEle.style.fontSize = `${fontSize / Math.pow(boxRatio, 2)}px`;
-          boxRatio = parentEle.clientWidth / window.innerWidth;
-          if (boxRatio > 1) {
-            parentEle.style.fontSize = `${fontSize / Math.pow(boxRatio, 2)}px`;
-          }
         }
-        console.log({
-          p: parentEle.clientWidth,
-          c: childEle.clientWidth,
-          w: window.innerWidth
-        })
       });
     });
     const options = {
       characterData: true, // テキストノードの変化を監視
-      subtree: true
+      characterDataOldValue: true,
+      subtree: true  // 子孫ノードの変化を監視
     };
-    observer.observe(document.querySelector('div.tmp-formula-box'), options);
-    observer.observe(document.querySelector('div.answer-box'), options);
+    observer.observe(tmpFormulaBox, options);
+    observer.observe(answerBox, options);
 
     document.addEventListener('keydown', this.onInput);
     this.$nextTick(() => {

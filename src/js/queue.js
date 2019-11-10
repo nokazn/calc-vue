@@ -14,7 +14,7 @@ export default class Queue {
 
   get (index) {
     if (typeof index !== 'number') {
-      throw new SynataxError('Invald or unexpected token');
+      throw new SyntaxError('Invald or unexpected token');
     } else if (index < 0 || this.length <= index) {
       throw new RangeError('Invalid index');
     }
