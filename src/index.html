@@ -26,7 +26,11 @@
           v-for="button in buttons"
           :key="button.name"
           v-bind="button"
-          @click="onClick(button)">
+          :data-is-active="button.name === activeButtonName"
+          @mousedown.prevent="onClickStart(button)"
+          @mouseup.prevent="onClickEnd"
+          @touchstart.prevent="onClickStart(button)"
+          @touchend.prevent="onClickEnd">
           <span v-show="isShown">{{ button.content }}</span>
         </button>
       </div>

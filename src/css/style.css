@@ -78,12 +78,12 @@ div.buttons-container button.unary-ope-button {
   background-color: #f0f0f0
 }
 
-div.buttons-container button.num-button:active,
-div.buttons-container button.unary-ope-button:active {
+div.buttons-container button.num-button[data-is-active="true"],
+div.buttons-container button.unary-ope-button[data-is-active="true"] {
   background-color: #e6e6e6;
 }
 
-div.buttons-container button.binary-ope-button:active {
+div.buttons-container button.binary-ope-button[data-is-active="true"] {
   background-color: #006eb1;
   color: #d5eeee;
 }

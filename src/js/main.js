@@ -5,10 +5,11 @@ import { getFontSize, optimizeFontSize } from './utils.js';
 new Vue({
   el: '#app',
   data: {
-    defaultFontSize: {},
     innerWidth: 0,
+    defaultFontSize: {},
     isShown: false,
     buttons,
+    activeButtonName: null,
     nums: new Queue(2),
     opes: new Queue(2),
     _num: '',
@@ -172,8 +173,12 @@ new Vue({
     }
   },
   methods: {
-    onClick ({ arg, handler }) {
+    onClickStart ({ name, arg, handler }) {
+      this.activeButtonName = name;
       arg ? this[handler](arg) : this[handler]();
+    },
+    onClickEnd () {
+      this.activeButtonName = null;
     },
     /**
      * 数字が入力された場合
