@@ -158,7 +158,7 @@ export default [
     content: '.',
     class: 'unary-ope-button',
     handler: 'onNum',
-    arg: ''
+    arg: '.'
   },
   {
     name: '=',
