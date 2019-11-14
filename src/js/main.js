@@ -1,6 +1,6 @@
 import Queue from './queue.js';
 import buttons from './buttons.js';
-import { getFontSize } from './utils.js';
+import { getFontSize, optimizeFontSize } from './utils.js';
 
 new Vue({
   el: '#app',
@@ -29,22 +29,13 @@ new Vue({
 
     const observer = new MutationObserver((mutations) => {
       mutations.forEach(mutation => {
-        const diff = mutation.target.data.length - mutation.oldValue.length;
-        const childEle = mutation.target.parentElement;
-        const parentEle = childEle.parentElement;
-        const defaultFontSize = this.defaultFontSize[parentEle.id];
-        let boxRatio = parentEle.clientWidth / this.innerWidth;
-        // parentEle の padding が左右で 2% ずつなのを考慮
-        let spanRatio = childEle.clientWidth / (this.innerWidth * 0.90);
-        let fontSize = getFontSize(parentEle);
-        if (diff > 0 && spanRatio >= 1) {
-          fontSize = fontSize / spanRatio;
-          parentEle.style.fontSize = `${fontSize}px`;
-        } else if (diff < 0 && spanRatio < 1) {
-          fontSize = fontSize / spanRatio < defaultFontSize ? fontSize /spanRatio : defaultFontSize;
-          parentEle.style.fontSize = `${fontSize}px`;
-          console.log(fontSize)
-        }
+        const ele = mutation.target.parentElement;
+        optimizeFontSize({
+          diff: mutation.target.data.length - mutation.oldValue.length,
+          ele,
+          innerWidth: this.innerWidth,
+          defaultFontSize: this.defaultFontSize[ele.parentElement.id]
+        });
       });
     });
     const options = {
@@ -55,7 +46,41 @@ new Vue({
     observer.observe(tmpFormulaBox, options);
     observer.observe(answerBox, options);
 
-    document.addEventListener('keydown', this.onInput);
+    /**
+     * リサイズされたとき
+     */
+    window.addEventListener('resize', _.debounce(() => {
+      this.innerWidth = window.innerWidth;
+      optimizeFontSize({
+        ele: answerBox.lastElementChild,
+        innerWidth: this.innerWidth,
+        defaultFontSize: this.defaultFontSize[answerBox.id]
+      });
+      optimizeFontSize({
+        ele: tmpFormulaBox.lastElementChild,
+        innerWidth: this.innerWidth,
+        defaultFontSize: this.defaultFontSize[tmpFormulaBox.id]
+      });
+    }, 100));
+
+    /**
+     * 何らかのキーが押されたとき
+     */
+    document.addEventListener('keydown', e => {
+      if (/^[0-9]$|\./.test(e.key)) {
+        this.onNum(e.key);
+      } else if (/^\+|-|\*|\/$/.test(e.key)) {
+        this.onBinaryOpe(e.key);
+      } else if (e.key === 'Escape') {
+        this.onClearAll();
+      } else if (e.key === 'Delete') {
+        this.onCancel();
+      } else if (e.key === 'Backspace') {
+        this.onBackSpace();
+      } else if (e.key === 'Enter' || e.key === '=') {
+        this.onEqu();
+      }
+    });
 
     this.$nextTick(() => {
       // MathJax で成形されるまで待ってから表示
@@ -147,21 +172,6 @@ new Vue({
     }
   },
   methods: {
-    onInput (e) {
-      if (/^[0-9]$|\./.test(e.key)) {
-        this.onNum(e.key);
-      } else if (/^\+|-|\*|\/$/.test(e.key)) {
-        this.onBinaryOpe(e.key);
-      } else if (e.key === 'Escape') {
-        this.onClearAll();
-      } else if (e.key === 'Delete') {
-        this.onCancel();
-      } else if (e.key === 'Backspace') {
-        this.onBackSpace();
-      } else if (e.key === 'Enter' || e.key === '=') {
-        this.onEqu();
-      }
-    },
     onClick ({ arg, handler }) {
       arg ? this[handler](arg) : this[handler]();
     },
@@ -221,7 +231,7 @@ new Vue({
        */
       const handlers = {
         percent ({ value }) {
-          const answer = Strin(value / 100);
+          const answer = String(value / 100);
           return {
             formula: answer,
             value: answer
@@ -269,7 +279,6 @@ new Vue({
       }
     },
     onEqu () {
-      console.log('equ')
       if (this.nums.get(1)) {
         // this.num があれば採用
         // tihs.num がなければ、暫定の二項演算子がある場合は前回の答え (現在表示されている数値) を採用
@@ -340,9 +349,6 @@ new Vue({
         ope: ''
       };
     },
-    initFontSize (ele, fontSize) {
-      ele.style.fontSize = fontSize
-    },
     calc () {
       if (this.isCalcuatable) {
         const answer = (new Function(`'use strict'; return ${this.formula}`))().toString();
@@ -353,7 +359,6 @@ new Vue({
         console.error('this formula is uncalcuatable!');
         console.error({ formula: this.formula });
       }
-      console.log('calc')
     }
   }
 });
