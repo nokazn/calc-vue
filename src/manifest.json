@@ -1,21 +1,20 @@
 {
-  "background_color": "#006eb1",
-  "theme_color": "#3367D6",
+  "background_color": "#5bbad5",
+  "theme_color": "#5bbad5",
   "display": "standalone",
-  "icons": [{
-    "sizes": "180x180",
-    "src": "/img/icon/180.jpg",
-    "type": "image/jpg"
-  }, {
-    "sizes": "192x192",
-    "src": "/img/icon/192.jpg",
-    "type": "image/jpg"
-  }, {
-    "sizes": "512x512",
-    "src": "/img/icon/512.jpg",
-    "type": "image/jpg"
-  }],
-  "name": "電卓",
-  "short_name": "電卓",
+  "icons": [
+    {
+        "src": "img/android-chrome-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+    },
+    {
+        "src": "img/android-chrome-384x384.png",
+        "sizes": "384x384",
+        "type": "image/png"
+    }
+  ],
+  "name": "\u96fb\u5353",
+  "short_name": "\u96fb\u5353",
   "start_url": "./"
 }
