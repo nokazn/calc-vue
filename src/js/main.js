@@ -12,14 +12,14 @@ new Vue({
     activeButtonName: null,
     nums: new Queue(2),
     opes: new Queue(2),
-    _num: '',
+    $_num: '',
     maxNumLength: 50,
     ope: '',
-    _tmpFormula: {
+    $_tmpFormula: {
       num: '',
       ope: ''
     },
-    _fixedFormulaHistory: ''
+    $_fixedFormulaHistory: ''
   },
   mounted () {
     const tmpFormulaBox = document.querySelector('div.tmp-formula-box');
@@ -100,7 +100,7 @@ new Vue({
      */
     num: {
       get () {
-        return this.$data._num;
+        return this.$data.$_num;
       },
       /**
        * 値が入力されたときバリデーションを行う
@@ -109,31 +109,31 @@ new Vue({
        */
       set (val) {
         const inputVal = val.slice(-1);
-        const diff = val.length - this.$data._num.length;
+        const diff = val.length - this.$data.$_num.length;
         // 値をクリアするとき
         if (inputVal === '') {
-          this.$data._num = '';
+          this.$data.$_num = '';
         // 値が入力され、最大文字数未満 の場合
         } else if (this.numLength < this.maxNumLength || diff < 0) {
           // 1桁目の入力の場合
-          if (this.$data._num === '') {
+          if (this.$data.$_num === '') {
             if (inputVal === '.') {
-              this.$data._num = '0.';
+              this.$data.$_num = '0.';
             } else {
-              this.$data._num = val;
+              this.$data.$_num = val;
             }
           // 2桁目以降の入力の場合
           } else {
-            if (this.$data._num === '0') {
-              this.$data._num = inputVal;
+            if (this.$data.$_num === '0') {
+              this.$data.$_num = inputVal;
             } else if (
               // 複数回目の小数点の入力か、最大文字数目の入力値が小数点の場合
               inputVal === '.'
-              && (this.$data._num.includes('.') || this.numLength === this.maxNumLength - 1)
+              && (this.$data.$_num.includes('.') || this.numLength === this.maxNumLength - 1)
             ) {
               return;
             } else {
-              this.$data._num = val;
+              this.$data.$_num = val;
             }
           }
         }
@@ -143,10 +143,10 @@ new Vue({
      * 小数点 (.) とマイナス (-) を除いた文字数
      */
     numLength () {
-      return this.$data._num.replace(/\.|-/, '').length;
+      return this.$data.$_num.replace(/\.|-/, '').length;
     },
     formulaHistory () {
-      return `${this.$data._fixedFormulaHistory}${this.$data._tmpFormula.num}${this.$data._tmpFormula.ope}`;
+      return `${this.$data.$_fixedFormulaHistory}${this.$data.$_tmpFormula.num}${this.$data.$_tmpFormula.ope}`;
     },
     formula () {
       return `${this.nums.get(0)}${this.opes.get(1)}(${this.nums.get(1)})`;
@@ -180,6 +180,13 @@ new Vue({
     onClickEnd () {
       this.activeButtonName = null;
     },
+    onTouchStart ({ name }) {
+      this.activeButtonName = name;
+    },
+    onTouchEnd ({ arg, handler }) {
+      arg ? this[handler](arg) : this[handler]();
+      this.activeButtonName = null;
+    },
     /**
      * 数字が入力された場合
      * @param {string} num - /[0-9]|\./
@@ -205,7 +212,7 @@ new Vue({
         this.num = '';
         // 二項演算子が入力されたときに数字も同時に更新する
         this.updateTmpFormula({
-          num: this.$data._tmpFormula.num || num,
+          num: this.$data.$_tmpFormula.num || num,
           ope });
         this.settleNumInFormulaHistroy();
       } else {
@@ -271,7 +278,7 @@ new Vue({
       // 入力中の値か、なければ前回の答えを計算して入力値を更新
       const num = this.num || this.nums.get(1) || '0'
       const answer = handlers[type]({
-        formula: this.$data._tmpFormula.num || num,
+        formula: this.$data.$_tmpFormula.num || num,
         value: Number(num)
       });
       this.num = answer.value;
@@ -279,7 +286,7 @@ new Vue({
         num: answer.formula
       });
       // 暫定の二項演算子があれば確定させる
-      if (this.$data._tmpFormula.ope) {
+      if (this.$data.$_tmpFormula.ope) {
         this.settleOpeInFormulaHistroy();
       }
     },
@@ -333,23 +340,23 @@ new Vue({
      */
     updateTmpFormula ({num, ope}) {
       if (num != null) {
-        this.$data._tmpFormula.num = num;
+        this.$data.$_tmpFormula.num = num;
       }
       if (ope != null) {
-        this.$data._tmpFormula.ope = ope
+        this.$data.$_tmpFormula.ope = ope
       }
     },
     settleNumInFormulaHistroy () {
-      this.$data._fixedFormulaHistory += this.$data._tmpFormula.num;
-      this.$data._tmpFormula.num = '';
+      this.$data.$_fixedFormulaHistory += this.$data.$_tmpFormula.num;
+      this.$data.$_tmpFormula.num = '';
     },
     settleOpeInFormulaHistroy () {
-      this.$data._fixedFormulaHistory += this.$data._tmpFormula.ope;
-      this.$data._tmpFormula.ope = '';
+      this.$data.$_fixedFormulaHistory += this.$data.$_tmpFormula.ope;
+      this.$data.$_tmpFormula.ope = '';
     },
     initFormulaHistory () {
-      this.$data._fixedFormulaHistory = '';
-      this.$data._tmpFormula = {
+      this.$data.$_fixedFormulaHistory = '';
+      this.$data.$_tmpFormula = {
         num: '',
         ope: ''
       };
