@@ -2,14 +2,14 @@ import Queue from './queue.js';
 import buttons from './buttons.js';
 import { getFontSize, optimizeFontSize } from './utils.js';
 
-if (ServiceWorker in navigator) {
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/serviceWorker.js').then(registration => {
       console.log('ServiceWorker registration successful with scope: ', registration.scope);
     }).catch(e => {
       console.error('ServiceWorker registration failed: ', e);
     });
-  })
+  });
 }
 
 new Vue({

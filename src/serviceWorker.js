@@ -1,4 +1,4 @@
-const CACHE_NAME = 'calc-v1';
+const CACHE_NAME = 'nokazn-calc-vue-v1';
 const FILE_LIST_TO_CACHE = [
   '/',
   '/js/main.js',
@@ -6,42 +6,48 @@ const FILE_LIST_TO_CACHE = [
 ];
 
 const registerCache = (cacheName, fileListToCache) => {
-  caches.open(cacheName).then(cache => {
+  return caches.open(cacheName).then(cache => {
     return cache.addAll(fileListToCache);
   });
 };
-self.addEventListener('install', e => {
-  e.waitUntil(registerCache(CACHE_NAME, FILE_LIST_TO_CACHE));
+self.addEventListener('install', async () => {
+  await registerCache(CACHE_NAME, FILE_LIST_TO_CACHE);
 });
 
 const putCache = (cacheName, request, response) => {
-  caches.open(cacheName).then(cache => {
+  return caches.open(cacheName).then(cache => {
     cache.put(request, response);
   });
 };
 const fetchCache = request => {
-  caches.match(request).then(response => {
-    if (!response) {
+  return caches.match(request)
+  .then(response => {
+    if (response) {
       return response
     }
     const fetchRequest = request.clone();
-    return fetch(fetchRequest).then(response => {
-      if (response || response.status === 200 || response.type !== 'basic') {
-        return response;
+    return fetch(fetchRequest)
+    .then(response => {
+      if (response && response.status === 200 && response.type === 'basic') {
+        const responseToCache = response.clone();
+        putCache(CACHE_NAME, request, responseToCache);
       }
-      const responseToCache = response.clone();
-      putCache(CACHE_NAME, request, responseToCache);
       return response;
+    }).catch(e => {
+      console.error(e);
     });
   })
+  .catch(e => {
+    console.error(e);
+  });
 };
 self.addEventListener('fetch', e => {
   e.respondWith(fetchCache(e.request));
 });
 
-const deleteCache = cacheWhiteList => {
-  caches.keys().then(cacheList => {
-    return Promise.all(
+const deleteCache =  cacheWhiteList => {
+  return caches.keys().then(cacheList => {
+    Promise.all(
       cacheList.map(cache => {
         if (!cacheWhiteList.includes(cache)) {
           return caches.delete(cache);
@@ -51,5 +57,8 @@ const deleteCache = cacheWhiteList => {
   });
 };
 self.addEventListener('activate', e => {
-  e.waitUntil(deleteCache([]));
+  console.log('activate');
+  e.waitUntil(deleteCache([CACHE_NAME]));
 });
+
+// self.addEventListener('push', )
