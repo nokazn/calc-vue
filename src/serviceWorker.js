@@ -57,8 +57,5 @@ const deleteCache =  cacheWhiteList => {
   });
 };
 self.addEventListener('activate', e => {
-  console.log('activate');
   e.waitUntil(deleteCache([CACHE_NAME]));
 });
-
-// self.addEventListener('push', )
