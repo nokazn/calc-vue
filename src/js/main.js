@@ -223,7 +223,8 @@ new Vue({
         // 二項演算子が入力されたときに数字も同時に更新する
         this.updateTmpFormula({
           num: this.$data.$_tmpFormula.num || num,
-          ope });
+          ope
+        });
         this.settleNumInFormulaHistroy();
       } else {
         // 二項演算子の上書きのみを行う
@@ -240,15 +241,9 @@ new Vue({
      */
     onUnaryOpe (type) {
       /**
-       * @typedef Handler: ({
-       *   value: string
-       *   formula: number,
-       * }) => {
+       * @typedef Handler: ({ value: string, formula: number }) => ({
        *  formula: string,
        *  value: string
-       * }}
-       */
-      /**
        * @type {[key: string]: Handler}
        */
       const handlers = {
